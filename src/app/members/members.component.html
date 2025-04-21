@@ -1,0 +1,472 @@
+<div class="card my-4">
+  <div *ngIf="tableVisible">
+    <p-table
+      #dt
+      [value]="member"
+      [globalFilterFields]="['name']"
+      selectionMode="single"
+      editMode="row"
+      [(selection)]="selectedmembers"
+      dataKey="id"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [rows]="10"
+      [paginator]="true"
+      [scrollable]="true"
+      scrollHeight="700px"
+      sortField="membershipEndDate"
+      [sortOrder]="-1"
+      [rowsPerPageOptions]="[5, 10, 20]"
+    >
+      <ng-template #caption>
+        <p-iconfield iconPosition="right">
+          <p-button
+            label="New"
+            icon="pi pi-plus"
+            class="mr-2"
+            (click)="openNew()"
+          />
+        </p-iconfield>
+      </ng-template>
+
+      <ng-template #header class="text-center">
+        <tr class="text-center">
+          <th pSortableColumn="enrollmentNo" style="min-width: 200px">
+            Enrollment No <p-sortIcon field="enrollmentNo" />
+          </th>
+          <th pSortableColumn="name" style="min-width: 200px">
+            Name<p-sortIcon field="name" />
+          </th>
+          <th pSortableColumn="gender" style="min-width: 200px">
+            Gender<p-sortIcon field="gender" />
+          </th>
+          <th style="min-width: 200px">
+            Subscription Plan<p-columnFilter
+              type="text"
+              field="subscriptionPlanId"
+              display="menu"
+              class="ml-auto"
+            />
+          </th>
+          <th pSortableColumn="height" style="min-width: 200px">
+            Height (in cm)<p-sortIcon field="height" />
+          </th>
+          <th pSortableColumn="weight" style="min-width: 200px">
+            Weight (in Kg)<p-sortIcon field="weight" />
+          </th>
+          <th pSortableColumn="contactNumber" style="min-width: 200px">
+            Contact Number<p-sortIcon field="contactNumber" />
+          </th>
+          <th pSortableColumn="email" style="min-width: 200px">
+            Email<p-sortIcon field="email" />
+          </th>
+          <th pSortableColumn="active" style="min-width: 200px">
+            Active<p-sortIcon field="active" />
+          </th>
+          <th pSortableColumn="membershipEndDate" style="min-width: 250px">
+            MembershipEndDate<p-sortIcon field="membershipEndDate" />
+          </th>
+          <th style="min-width: 200px" class="text-center">Action</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-member class="text-center" let-index>
+        <tr [pSelectableRow]="member" class="text-center">
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{ member.enrollmentNo }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <a
+                class="font-bold ml-1 align-middle text-decoration-none"
+                (click)="viewMemberDetails(member.id)"
+              >
+                {{ member.name }}
+              </a>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              {{ getGenderValue(member.gender) }}
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{
+                getPlanNameById(member.subscriptionPlanId)
+              }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{ member.height }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{ member.weight }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{ member.contactNumber }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{ member.email }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span
+                class="status-badge"
+                [ngClass]="member.active ? 'Active' : 'InActive'"
+                (click)="toggleStatus(member.id)"
+              >
+                {{ member.active ? "Active" : "InActive" }}
+              </span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{
+                member.membershipEndDate | date : "dd-mm-yyy"
+              }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex justify-content-around align-items-center">
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-pencil"
+                  class="mr-2"
+                  [rounded]="true"
+                  [outlined]="true"
+                  (click)="editMember(member)"
+                />
+              </div>
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [rounded]="true"
+                  [outlined]="true"
+                  (click)="deleteMember(member)"
+                />
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-dialog
+    [(visible)]="memberDialog"
+    [style]="{ width: '600px' }"
+    header="{{ isEdit ? 'Edit Member' : ' Add Member' }}"
+    [modal]="true"
+  >
+    <ng-template #content>
+      <form #memberForm="ngForm">
+        <div class="container">
+          <div class="row g-3">
+            <!-- Enrollment no -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="enrollmentNo" class="fw-bold">Enrollment No</label>
+
+                <input
+                  type="text"
+                  pInputText
+                  class="form-control"
+                  id="enrollmentNo"
+                  [(ngModel)]="model.enrollmentNo"
+                  name="enrollmentNo"
+                  required
+                  #enrollmentNo="ngModel"
+                  autofocus
+                  [disabled]="isEditMode"
+                />
+
+                <small
+                  *ngIf="
+                    detailssubmited &&
+                    enrollmentNo.invalid &&
+                    enrollmentNo.touched
+                  "
+                  class="text-danger"
+                >
+                  Enrollment number is required.
+                </small>
+
+                <small
+                  class="text-danger"
+                  *ngIf="errorMessage && !isEditMode"
+                  >{{ errorMessage }}</small
+                >
+              </div>
+            </div>
+
+            <!-- Name -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="name" class="fw-bold">Name</label>
+                <input
+                  type="text"
+                  pInputText
+                  class="form-control"
+                  id="name"
+                  [(ngModel)]="model.name"
+                  name="name"
+                  required
+                  minlength="3"
+                  #name="ngModel"
+                  autofocus
+                />
+                <small
+                  *ngIf="detailssubmited && name.invalid && name.touched"
+                  class="text-danger"
+                >
+                  Name is required (min 3 characters).
+                </small>
+              </div>
+            </div>
+
+            <!-- Gender -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="gender" class="fw-bold">Gender</label>
+                <select
+                  name="gender"
+                  id="gender"
+                  class="form-control"
+                  [(ngModel)]="model.gender"
+                  required
+                  #gender="ngModel"
+                >
+                  <option
+                    *ngFor="let enum of genderValues"
+                    [value]="enum.value"
+                  >
+                    {{ enum.name }}
+                  </option>
+                </select>
+                <small
+                  *ngIf="detailssubmited && gender.invalid && gender.touched"
+                  class="text-danger"
+                >
+                  Gender is required.
+                </small>
+              </div>
+            </div>
+
+            <!-- Subscription Plan -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="subscriptionPlan" class="fw-bold"
+                  >Subscription Plan</label
+                >
+                <p-select
+                  [options]="plan"
+                  [(ngModel)]="model.subscriptionPlanId"
+                  optionLabel="planName"
+                  name="plan"
+                  placeholder="Select subscription plan"
+                  class="w-100"
+                  optionValue="id"
+                  required
+                  #subscription="ngModel"
+                ></p-select>
+                <small
+                  *ngIf="
+                    detailssubmited &&
+                    subscription.invalid &&
+                    subscription.touched
+                  "
+                  class="text-danger"
+                >
+                  Subscription Plan is required.
+                </small>
+              </div>
+            </div>
+
+            <!-- Weight -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="weight" class="fw-bold">Weight</label>
+                <input
+                  type="number"
+                  pInputText
+                  class="form-control"
+                  id="weight"
+                  [(ngModel)]="model.weight"
+                  name="weight"
+                  required
+                  min="1"
+                  #weight="ngModel"
+                />
+                <small
+                  *ngIf="detailssubmited && weight.invalid && weight.touched"
+                  class="text-danger"
+                >
+                  Weight is required and should be a positive number.
+                </small>
+              </div>
+            </div>
+
+            <!-- Height -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="height" class="fw-bold">Height</label>
+                <input
+                  type="number"
+                  pInputText
+                  class="form-control"
+                  id="height"
+                  [(ngModel)]="model.height"
+                  required
+                  name="height"
+                  min="1"
+                  #height="ngModel"
+                />
+                <small
+                  *ngIf="detailssubmited && height.invalid && height.touched"
+                  class="text-danger"
+                >
+                  Height is required and should be a positive number.
+                </small>
+              </div>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="contactNumber" class="fw-bold"
+                  >Contact Number</label
+                >
+                <input
+                  type="number"
+                  pInputText
+                  class="form-control"
+                  id="contactNumber"
+                  [(ngModel)]="model.contactNumber"
+                  required
+                  [maxlength]="10"
+                  [minlength]="10"
+                  name="contactNumber"
+                  #contact="ngModel"
+                  pattern="^[0-9]{10}$"
+                />
+                <small
+                  *ngIf="detailssubmited && contact.invalid && contact.touched"
+                  class="text-danger"
+                >
+                  Contact Number is required (10 digits).
+                </small>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="email" class="fw-bold">Email</label>
+                <input
+                  type="email"
+                  pInputText
+                  class="form-control"
+                  id="email"
+                  [(ngModel)]="model.email"
+                  required
+                  name="email"
+                  #email="ngModel"
+                  email
+                />
+                <small
+                  *ngIf="detailssubmited && email.invalid && email.touched"
+                  class="text-danger"
+                >
+                  Enter a valid Email address.
+                </small>
+              </div>
+            </div>
+
+            <!-- Membership Start Date -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="membershipStartDate" class="fw-bold"
+                  >Membership Start Date</label
+                >
+                <p-datepicker
+                  [(ngModel)]="model.membershipStartDate"
+                  name="membershipStartDate"
+                  [minDate]="model.membershipStartDate"
+                  [readonlyInput]="true"
+                />
+              </div>
+            </div>
+
+            <!-- Membership End Date -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="membershipEndDate" class="fw-bold"
+                  >Membership End Date</label
+                >
+                <p-datepicker
+                  [(ngModel)]="model.membershipEndDate"
+                  name="membershipEndDate"
+                  [minDate]="model.membershipEndDate"
+                  [readonlyInput]="true"
+                  class="w-100"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <p-button
+            label="{{ isEdit ? 'Edit' : ' Add Member' }} "
+            icon="pi pi-check"
+            (click)="saveMember()"
+            type="submit"
+            [disabled]="memberForm.invalid"
+          />
+        </div>
+      </form>
+    </ng-template>
+  </p-dialog>
+  <p-confirmDialog [style]="{ width: '450px' }" />
+</div>
+
+<p-dialog
+  [(visible)]="memberDetailDialog"
+  id="detailsDialog"
+  [style]="{ width: '500px' }"
+  header="Member Details"
+  [modal]="true"
+  [dismissableMask]="true"
+>
+  <div class="container p-3">
+    <div class="row">
+      <div class="col-md-12">
+        <div
+          *ngFor="let field of memberFields"
+          class="p-2 border-bottom d-flex justify-content-between"
+        >
+          <strong class="text-primary">{{ field.label }}:</strong>
+          <span class="text-dark">{{ field.value }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #footer>
+    <p-button
+      label="Close"
+      icon="pi pi-times"
+      text
+      (click)="memberDetailDialog = false"
+    />
+  </ng-template>
+</p-dialog>

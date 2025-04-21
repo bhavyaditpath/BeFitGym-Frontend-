@@ -1,0 +1,503 @@
+<div class="card my-5">
+  <div *ngIf="tableVisible">
+    <p-table
+      #dt
+      [value]="trainer"
+      [globalFilterFields]="[
+        'firstName',
+        'activate',
+        'salary',
+        'email',
+        'contactNumber'
+      ]"
+      selectionMode="single"
+      editMode="row"
+      dataKey="id"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [rows]="5"
+      [paginator]="true"
+      [(selection)]="selectedtrainers"
+      [scrollable]="true"
+      scrollHeight="700px"
+      [rowsPerPageOptions]="[5, 10, 20]"
+    >
+      <ng-template #caption>
+        <div class="d-flex justify-content-between align-items-center">
+          <p-iconfield iconPosition="right">
+            <p-button
+              label="New"
+              icon="pi pi-plus"
+              class="mr-2"
+              (click)="openNew()"
+            />
+          </p-iconfield>
+          <p-iconfield iconPosition="left" class="ml-auto">
+            <p-inputicon>
+              <i class="pi pi-search"></i>
+            </p-inputicon>
+            <input
+              pInputText
+              type="text"
+              (input)="dt.filterGlobal(getValues($event), 'contains')"
+              placeholder="Search keyword"
+            />
+          </p-iconfield>
+        </div>
+      </ng-template>
+
+      <ng-template #header class="text-center">
+        <tr class="text-center">
+          <th pSortableColumn="firstName" style="min-width: 200px">
+            <p-columnFilter
+              type="text"
+              field="firstName"
+              display="menu"
+              class="ml-auto"
+            />
+            Full Name <p-sortIcon field="firstName" />
+          </th>
+          <th pSortableColumn="gender" style="min-width: 200px">
+            <p-columnFilter
+              type="text"
+              field="gender"
+              display="menu"
+              class="ml-auto"
+            />
+            Gender<p-sortIcon field="gender" />
+          </th>
+          <th pSortableColumn="contactNumber" style="min-width: 200px">
+            <p-columnFilter
+              type="text"
+              field="contactNumber"
+              display="menu"
+              class="ml-auto"
+            />
+            Contact Number <p-sortIcon field="contactNumber" />
+          </th>
+
+          <th pSortableColumn="email" style="min-width: 200px">
+            <p-columnFilter
+              type="text"
+              field="email"
+              display="menu"
+              class="ml-auto"
+            />
+            Email<p-sortIcon field="email" />
+          </th>
+          <th pSortableColumn="salary" style="min-width: 150px">
+            <p-columnFilter
+              type="text"
+              field="salary"
+              display="menu"
+              class="ml-auto"
+            />
+            Salary<p-sortIcon field="salary" />
+          </th>
+          <th pSortableColumn="activate" style="min-width: 100px">
+            <p-columnFilter
+              type="text"
+              field="activate"
+              display="menu"
+              class="ml-auto"
+            />
+            Activate<p-sortIcon field="activate" />
+          </th>
+          <th style="min-width: 200px" class="text-center">Action</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-trainers class="text-center">
+        <tr [pSelectableRow]="trainers" class="text-center">
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle"
+                >{{ trainers.firstName }} {{ trainers.lastName }}</span
+              >
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{ trainers.gender }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              {{ trainers.contactNumber }}
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              {{ trainers.email }}
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span class="ml-1 align-middle">{{ trainers.salary }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span
+                class="status-badge"
+                [ngClass]="trainers.Activate ? 'Active' : 'InActive'"
+                (click)="toggleStatus(trainers.id)"
+              >
+                {{ trainers.Activate ? "Activate" : "Deactivate" }}
+              </span>
+            </div>
+          </td>
+
+          <td>
+            <div class="d-flex justify-content-around align-items-center">
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-pencil"
+                  class="mr-2"
+                  [rounded]="true"
+                  [outlined]="true"
+                  (click)="editMember(trainers)"
+                />
+              </div>
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [rounded]="true"
+                  [outlined]="true"
+                  (click)="deleteMember(trainers)"
+                />
+              </div>
+              <div class="flex items-center gap-2">
+                <p-button
+                  icon="pi pi-eye"
+                  severity="info"
+                  [rounded]="true"
+                  [outlined]="true"
+                  (click)="viewMemberDetails(trainers.id)"
+                />
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-dialog
+    [(visible)]="AddEditDialogbox"
+    [style]="{ width: '600px' }"
+    header="{{ isEdit ? 'Edit Member' : ' Add Member' }}"
+    [modal]="true"
+  >
+    <ng-template #content>
+      <form [formGroup]="userForm">
+        <div class="container">
+          <div class="row g-3">
+            <!-- FirstName -->
+            <div class="col-md-6">
+              <label class="fw-bold">First Name</label>
+              <input
+                type="text"
+                pInputText
+                class="w-100"
+                formControlName="firstName"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['firstName'].touched &&
+                  userForm.controls['firstName'].invalid &&
+                  userForm.controls['firstName']
+                "
+              >
+                First Name is required (Min 2 chars).
+              </small>
+            </div>
+            <!-- lastName -->
+            <div class="col-md-6">
+              <label class="fw-bold">Last Name</label>
+              <input
+                type="text"
+                pInputText
+                class="w-100"
+                formControlName="lastName"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['lastName'].touched &&
+                  userForm.controls['lastName'].invalid
+                "
+              >
+                Last Name is required (Min 2 chars).
+              </small>
+            </div>
+            <!-- Gender -->
+            <div class="col-md-6">
+              <label class="fw-bold">Gender</label>
+              <p-select
+                formControlName="gender"
+                class="w-100"
+                placeholder="Select Gender"
+                [options]="genders"
+                optionLabel="name"
+                optionValue="name"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['gender'].touched &&
+                  userForm.controls['gender'].invalid
+                "
+              >
+                Please select a gender.
+              </small>
+            </div>
+            <!-- ContactNumber -->
+            <div class="col-md-6">
+              <label class="fw-bold">Contact No</label>
+              <input
+                type="number"
+                pInputText
+                class="w-100"
+                formControlName="contactNumber"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['contactNumber'].touched &&
+                  userForm.controls['contactNumber'].invalid
+                "
+              >
+                Enter a valid 10-digit number.
+              </small>
+            </div>
+            <!-- Email -->
+            <div class="col-md-6">
+              <label class="fw-bold">Email</label>
+              <input
+                type="email"
+                pInputText
+                class="w-100"
+                formControlName="email"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['email'].touched &&
+                  userForm.controls['email'].invalid
+                "
+              >
+                Enter a valid email address.
+              </small>
+            </div>
+            <!-- Salary -->
+            <div class="col-md-6">
+              <label class="fw-bold">Salary</label>
+              <input
+                type="number"
+                pInputText
+                class="w-100"
+                formControlName="salary"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['salary'].touched &&
+                  userForm.controls['salary'].invalid
+                "
+              >
+                Salary must be greater than 10000.
+              </small>
+            </div>
+            <!-- Activate -->
+            <div class="col-md-6">
+              <label class="fw-bold">Activate</label>
+              <p-select
+                formControlName="Activate"
+                [options]="activate"
+                optionLabel="value"
+                placeholder="Activate or Deactivate"
+                class="w-100"
+                optionValue="value"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['Activate'].touched &&
+                  userForm.controls['Activate'].invalid
+                "
+              >
+                Please select activation status.
+              </small>
+            </div>
+            <!-- JoiningDate -->
+            <div class="col-md-6">
+              <label class="fw-bold">Joining Date</label>
+              <p-datepicker
+                class="w-100"
+                formControlName="joiningDate"
+                [readonlyInput]="true"
+                [maxDate]="minDate"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['joiningDate'].touched &&
+                  userForm.controls['joiningDate'].invalid
+                "
+              >
+                Joining date is required.
+              </small>
+            </div>
+            <!-- TotalExp -->
+            <div class="col-md-6">
+              <label class="fw-bold">Total Experience</label>
+              <input
+                type="number"
+                pInputText
+                class="w-100"
+                formControlName="totalExperience"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['totalExperience'].touched &&
+                  userForm.controls['totalExperience'].invalid
+                "
+              >
+                Experience should be greater then 1.
+              </small>
+            </div>
+            <!-- Height -->
+            <div class="col-md-6">
+              <label class="fw-bold">Height</label>
+              <input
+                type="number"
+                pInputText
+                class="w-100"
+                formControlName="heightCm"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['heightCm'].touched &&
+                  userForm.controls['heightCm'].invalid
+                "
+              >
+                Enter a valid height.(min 100cm)
+              </small>
+            </div>
+            <!-- Weight -->
+            <div class="col-md-6">
+              <label class="fw-bold">Weight</label>
+              <input
+                type="number"
+                pInputText
+                class="w-100"
+                formControlName="weightKg"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['weightKg'].touched &&
+                  userForm.controls['weightKg'].invalid
+                "
+              >
+                Enter a valid weight.(min 20Kg)
+              </small>
+            </div>
+            <!-- inTiming -->
+            <div class="col-md-6">
+              <label for="inTiming" class="fw-bold"> In Time </label>
+              <p-datepicker
+                inputId="inTiming"
+                name="inTiming"
+                inputId="inTiming"
+                class="w-100"
+                formControlName="inTiming"
+                [timeOnly]="true"
+                readonlyInput="true"
+                [showTime]="true"
+                hourFormat="12"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['inTiming'].touched &&
+                  userForm.controls['inTiming'].invalid
+                "
+              >
+                Enter a in timing.
+              </small>
+            </div>
+            <!-- outTiming -->
+            <div class="col-md-6">
+              <label for="outTiming" class="fw-bold"> Out Time </label>
+              <p-datepicker
+                name="outTiming"
+                class="w-100"
+                formControlName="outTiming"
+                [timeOnly]="true"
+                readonlyInput="true"
+                [showTime]="true"
+                hourFormat="12"
+              />
+              <small
+                class="text-danger"
+                *ngIf="
+                  userForm.controls['outTiming'].touched &&
+                  userForm.controls['outTiming'].invalid
+                "
+              >
+                Enter a out timing.
+              </small>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <p-button
+              label="{{ isEdit ? 'Edit' : ' Add Member' }} "
+              icon="pi pi-check"
+              (click)="saveTrainers()"
+              type="submit"
+            />
+          </div>
+        </div>
+      </form>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog
+    [(visible)]="TrainerDetailDialog"
+    id="detailsDialog"
+    [style]="{ width: '500px' }"
+    header="Trainers Details"
+    [modal]="true"
+    [dismissableMask]="true"
+  >
+    <div class="container p-3">
+      <div class="row">
+        <div class="col-md-12">
+          <div
+            *ngFor="let field of trainerDetailsFields"
+            class="p-2 border-bottom d-flex justify-content-between"
+          >
+            <strong class="text-primary">{{ field.label }}:</strong>
+            <span class="text-dark">{{ field.value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #footer>
+      <p-button
+        label="Close"
+        icon="pi pi-times"
+        text
+        (click)="TrainerDetailDialog = false"
+      />
+    </ng-template>
+  </p-dialog>
+  <p-confirmDialog [style]="{ width: '450px' }" />
+</div>

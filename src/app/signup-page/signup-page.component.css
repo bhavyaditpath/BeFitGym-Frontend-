@@ -1,0 +1,13 @@
+.card {
+    max-width: 450px;
+    background: #ffffff;
+    border-radius: 12px;
+}
+::ng-deep p-inputtext, p-password {
+    border-radius: 8px;
+}
+/* ::ng-deep p-button {
+    background: #007bff !important;
+    border: none;
+    border-radius: 8px;
+} */

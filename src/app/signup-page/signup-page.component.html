@@ -1,0 +1,93 @@
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card p-5 shadow-lg w-50 rounded-lg border-0">
+    <h2 class="text-center mb-4 fw-bold">Signup</h2>
+    <form #userForm="ngForm" novalidate>
+      <div class="mb-3">
+        <p-floatlabel>
+          <input
+            pInputText
+            type="text"
+            id="name"
+            name="name"
+            [ngClass]="'w-100 p-inputtext-sm'"
+            [(ngModel)]="model.userName"
+            required
+            #name="ngModel"
+          />
+          <label for="name">Enter Name</label>
+        </p-floatlabel>
+        <small *ngIf="name.invalid && name.touched" class="text-danger"
+          >Name is required</small
+        >
+      </div>
+
+      <div class="mb-3">
+        <p-floatlabel>
+          <input
+            pInputText
+            type="email"
+            id="email"
+            name="email"
+            [ngClass]="'w-100 p-inputtext-sm'"
+            [(ngModel)]="model.userEmail"
+            required
+            email
+            #email="ngModel"
+          />
+          <label for="email">Email</label>
+        </p-floatlabel>
+        <small *ngIf="email.invalid && email.touched" class="text-danger"
+          >Enter a valid email</small
+        >
+      </div>
+
+      <div class="mb-4">
+        <p-floatlabel>
+          <p-password
+            class="w-100"
+            type="password"
+            id="password"
+            name="password"
+            required
+            autocomplete="off"
+            [minlength]="6"
+            [(ngModel)]="model.password"
+            [feedback]="false"
+            [toggleMask]="true"
+            #passwordModel="ngModel"
+          />
+          <label for="password">Password</label>
+          <div>
+               <small
+            *ngIf="passwordModel.invalid && passwordModel.touched"
+            class="text-danger"
+          >
+            Password is required and must be at least 6 characters long.
+          </small>
+          </div>
+       
+        </p-floatlabel>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <p class="m-0 text-secondary fw-bold">Already have an account?</p>
+        <a routerLink="/login" class="text-decoration-none text-primary fw-bold"
+          >Login here</a
+        >
+      </div>
+
+      <div class="text-center">
+        <p-button
+          label="Signup"
+          [disabled]="userForm.invalid"
+          (click)="signup()"
+          [styleClass]="'px-5 py-2 fw-bold'"
+        />
+      </div>
+
+      <p class="text-center text-success mt-3">{{ model.message }}</p>
+    </form>
+  </div>
+</div>
+
+
