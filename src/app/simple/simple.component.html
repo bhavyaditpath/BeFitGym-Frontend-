@@ -1,0 +1,37 @@
+<form [formGroup]="simpleForm" (ngSubmit)="onSubmit()">
+  <label for="firstName">First Name:</label>
+  <input type="text" id="firstName" formControlName="firstName" />
+
+  <label for="lastName">Last Name:</label>
+  <input type="text" id="lastName" formControlName="lastName" />
+
+  <button type="submit">Submit</button>
+</form>
+
+<!-- 
+<form #myForm="ngForm" (ngSubmit)="onSubmit(myForm.value)">
+  <app-reusable-input
+    label="firstName"
+    type="text"
+    placeholder="Enter your firstName"
+    id="firstName"
+    helpText="Enter your firstName to log in."
+    [(ngModel)]="simpleModel.firstName"
+    name="firstName"
+    [autofocus]="true"
+    [disabled]="isEditMode"
+    required
+  ></app-reusable-input>
+  <app-reusable-input
+    label="lastName"
+    type="lastName"
+    placeholder="Enter your lastName"
+    id="lastName"
+    [(ngModel)]="simpleModel.lastName"
+    name="lastName"
+  ></app-reusable-input>
+  <button type="submit">Submit</button>
+</form> -->
+
+<p>First Name: {{ simpleModel.firstName }}</p>
+<p>Last Name: {{ simpleModel.lastName }}</p>

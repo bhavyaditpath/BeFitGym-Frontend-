@@ -1,0 +1,24 @@
+
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <app-inputfields
+    label="First Name"
+    type="text"
+    placeholder="Enter your firstName"
+    id="firstName"
+    formControlName="firstName"
+    [autofocus]="true"
+  ></app-inputfields>
+
+  <app-inputfields
+    label="Last Name"
+    type="text"
+    placeholder="Enter your lastName"
+    id="lastName"
+    formControlName="lastName"
+  ></app-inputfields>
+
+  <button type="submit">Submit</button>
+</form>
+
+<p>First Name: {{ myForm.value.firstName }}</p>
+<p>Last Name: {{ myForm.value.lastName }}</p>

@@ -1,0 +1,60 @@
+<div class="form-group">
+  <label *ngIf="label" [for]="id">{{ label }}:</label>
+  <input
+    [type]="type"
+    class="form-control"
+    [id]="id"
+    [placeholder]="placeholder"
+    [ngModel]="value"
+    (ngModelChange)="onValueChange($event)"
+    [disabled]="disabled"
+    [readonly]="readonly"
+    [ngClass]="{
+      'ng-invalid': control?.invalid && (control?.touched || isSubmitted),
+      'ng-valid': control?.valid && (control?.touched || isSubmitted)
+    }"
+    [autofocus]="autofocus"
+  />
+
+  <div
+    *ngIf="control?.invalid && (control?.touched || isSubmitted)"
+    class="text-danger"
+  >
+    <ng-container *ngIf="control?.errors?.['required']">
+      {{ label || "This field" }} is required.
+    </ng-container>
+    <ng-container *ngIf="control?.errors?.['email']">
+      Invalid email format.
+    </ng-container>
+    <ng-container *ngIf="control?.errors?.['number']">
+      {{ label || "This field" }} must be a number.
+    </ng-container>
+    <ng-container *ngIf="control?.errors?.['minlength']">
+      {{ label || "This field" }} must be at least
+      {{ control?.errors?.['minlength'].requiredLength }} characters long.
+    </ng-container>
+    <ng-container *ngIf="control?.errors?.['maxlength']">
+      {{ label || "This field" }} cannot be longer than
+      {{ control?.errors?.['maxlength'].requiredLength }} characters.
+    </ng-container>
+    <ng-container *ngIf="control?.errors?.['pattern']">
+      {{ label || "This field" }} does not match the required pattern.
+    </ng-container>
+    <ng-container
+      *ngIf="
+        control?.errors?.['whitespace'] &&
+        !control?.errors?.['required'] &&
+        !control?.errors?.['minlength'] &&
+        !control?.errors?.['maxlength']
+      "
+    >
+      {{ label || "This field" }} cannot be blank or just spaces.
+    </ng-container>
+    <ng-container *ngIf="customError">
+      {{ customError }}
+    </ng-container>
+    <ng-container *ngFor="let error of customErrors">
+      <div *ngIf="control?.errors?.[error.key]">{{ error.message }}</div>
+    </ng-container>
+  </div>
+</div>

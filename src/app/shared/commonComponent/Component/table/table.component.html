@@ -1,0 +1,36 @@
+<div class="card">
+  <p-table
+    [value]="data"
+    [paginator]="true"
+    [rows]="rows"
+    [rowsPerPageOptions]="rowsPerPageOptions"
+    [scrollable]="true"
+    [scrollHeight]="tableHeight"
+    [globalFilterFields]="globalFilterFields"
+    [sortField]="sortField"
+    [sortOrder]="sortOrder"
+    [loading]="loading"
+    dataKey="id"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          {{ col.header }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+        <th *ngIf="actionTemplate">Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData>
+      <tr>
+        <td *ngFor="let col of columns">
+          {{ rowData[col.field] }}
+        </td>
+        <td *ngIf="actionTemplate">
+          <ng-container *ngTemplateOutlet="actionTemplate; context: {$implicit: rowData}"></ng-container>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

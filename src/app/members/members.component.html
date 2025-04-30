@@ -1,4 +1,4 @@
-<div class="card my-4">
+<!-- <div class="card my-4">
   <div *ngIf="tableVisible">
     <p-table
       #dt
@@ -173,7 +173,7 @@
       <form #memberForm="ngForm">
         <div class="container">
           <div class="row g-3">
-            <!-- Enrollment no -->
+
             <div class="col-md-6">
               <div class="form-group">
                 <label for="enrollmentNo" class="fw-bold">Enrollment No</label>
@@ -210,7 +210,7 @@
               </div>
             </div>
 
-            <!-- Name -->
+ 
             <div class="col-md-6">
               <div class="form-group">
                 <label for="name" class="fw-bold">Name</label>
@@ -235,7 +235,7 @@
               </div>
             </div>
 
-            <!-- Gender -->
+  
             <div class="col-md-6">
               <div class="form-group">
                 <label for="gender" class="fw-bold">Gender</label>
@@ -263,7 +263,7 @@
               </div>
             </div>
 
-            <!-- Subscription Plan -->
+
             <div class="col-md-6">
               <div class="form-group">
                 <label for="subscriptionPlan" class="fw-bold"
@@ -293,8 +293,7 @@
               </div>
             </div>
 
-            <!-- Weight -->
-            <div class="col-md-6">
+     <div class="col-md-6">
               <div class="form-group">
                 <label for="weight" class="fw-bold">Weight</label>
                 <input
@@ -317,7 +316,6 @@
               </div>
             </div>
 
-            <!-- Height -->
             <div class="col-md-6">
               <div class="form-group">
                 <label for="height" class="fw-bold">Height</label>
@@ -341,7 +339,7 @@
               </div>
             </div>
 
-            <!-- Contact Number -->
+
             <div class="col-md-6">
               <div class="form-group">
                 <label for="contactNumber" class="fw-bold"
@@ -369,7 +367,7 @@
               </div>
             </div>
 
-            <!-- Email -->
+ 
             <div class="col-md-6">
               <div class="form-group">
                 <label for="email" class="fw-bold">Email</label>
@@ -393,7 +391,6 @@
               </div>
             </div>
 
-            <!-- Membership Start Date -->
             <div class="col-md-6">
               <div class="form-group">
                 <label for="membershipStartDate" class="fw-bold"
@@ -408,7 +405,6 @@
               </div>
             </div>
 
-            <!-- Membership End Date -->
             <div class="col-md-6">
               <div class="form-group">
                 <label for="membershipEndDate" class="fw-bold"
@@ -469,4 +465,260 @@
       (click)="memberDetailDialog = false"
     />
   </ng-template>
+</p-dialog> -->
+
+<app-table
+  [data]="members"
+  [columns]="columns"
+  [globalFilterFields]="['name', 'contactNumber', 'enrollmentNo']"
+  (onEdit)="editMember($event)"
+  (onDelete)="deleteMember($event)"
+  (onView)="viewMemberDetails($event)"
+></app-table>
+
+<p-dialog
+  [(visible)]="memberDialog"
+  header="{{ isEdit ? 'Edit' : 'Add' }} Member"
+  [modal]="true"
+>
+  <form (ngSubmit)="saveMember()" #memberForm="ngForm">
+    <div class="container">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="enrollmentNo" class="fw-bold">Enrollment No</label>
+
+            <input
+              type="text"
+              pInputText
+              class="form-control"
+              id="enrollmentNo"
+              [(ngModel)]="model.enrollmentNo"
+              name="enrollmentNo"
+              required
+              #enrollmentNo="ngModel"
+              autofocus
+              [disabled]="isEditMode"
+            />
+
+            <small
+              *ngIf="
+                detailssubmited && enrollmentNo.invalid && enrollmentNo.touched
+              "
+              class="text-danger"
+            >
+              Enrollment number is required.
+            </small>
+
+            <small class="text-danger" *ngIf="errorMessage && !isEditMode">{{
+              errorMessage
+            }}</small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="name" class="fw-bold">Name</label>
+            <input
+              type="text"
+              pInputText
+              class="form-control"
+              id="name"
+              [(ngModel)]="model.name"
+              name="name"
+              required
+              minlength="3"
+              #name="ngModel"
+              autofocus
+            />
+            <small
+              *ngIf="detailssubmited && name.invalid && name.touched"
+              class="text-danger"
+            >
+              Name is required (min 3 characters).
+            </small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="gender" class="fw-bold">Gender</label>
+            <select
+              name="gender"
+              id="gender"
+              class="form-control"
+              [(ngModel)]="model.gender"
+              required
+              #gender="ngModel"
+            >
+              <option *ngFor="let enum of genderValues" [value]="enum.value">
+                {{ enum.name }}
+              </option>
+            </select>
+            <small
+              *ngIf="detailssubmited && gender.invalid && gender.touched"
+              class="text-danger"
+            >
+              Gender is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="subscriptionPlan" class="fw-bold"
+              >Subscription Plan</label
+            >
+            <p-select
+              [options]="plan"
+              [(ngModel)]="model.subscriptionPlanId"
+              optionLabel="planName"
+              name="plan"
+              placeholder="Select subscription plan"
+              class="w-100"
+              optionValue="id"
+              required
+              #subscription="ngModel"
+            ></p-select>
+            <small
+              *ngIf="
+                detailssubmited && subscription.invalid && subscription.touched
+              "
+              class="text-danger"
+            >
+              Subscription Plan is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="weight" class="fw-bold">Weight</label>
+            <input
+              type="number"
+              pInputText
+              class="form-control"
+              id="weight"
+              [(ngModel)]="model.weight"
+              name="weight"
+              required
+              min="1"
+              #weight="ngModel"
+            />
+            <small
+              *ngIf="detailssubmited && weight.invalid && weight.touched"
+              class="text-danger"
+            >
+              Weight is required and should be a positive number.
+            </small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="height" class="fw-bold">Height</label>
+            <input
+              type="number"
+              pInputText
+              class="form-control"
+              id="height"
+              [(ngModel)]="model.height"
+              required
+              name="height"
+              min="1"
+              #height="ngModel"
+            />
+            <small
+              *ngIf="detailssubmited && height.invalid && height.touched"
+              class="text-danger"
+            >
+              Height is required and should be a positive number.
+            </small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="contactNumber" class="fw-bold">Contact Number</label>
+            <input
+              type="number"
+              pInputText
+              class="form-control"
+              id="contactNumber"
+              [(ngModel)]="model.contactNumber"
+              required
+              [maxlength]="10"
+              [minlength]="10"
+              name="contactNumber"
+              #contact="ngModel"
+              pattern="^[0-9]{10}$"
+            />
+            <small
+              *ngIf="detailssubmited && contact.invalid && contact.touched"
+              class="text-danger"
+            >
+              Contact Number is required (10 digits).
+            </small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="email" class="fw-bold">Email</label>
+            <input
+              type="email"
+              pInputText
+              class="form-control"
+              id="email"
+              [(ngModel)]="model.email"
+              required
+              name="email"
+              #email="ngModel"
+              email
+            />
+            <small
+              *ngIf="detailssubmited && email.invalid && email.touched"
+              class="text-danger"
+            >
+              Enter a valid Email address.
+            </small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="membershipStartDate" class="fw-bold"
+              >Membership Start Date</label
+            >
+            <p-datepicker
+              [(ngModel)]="model.membershipStartDate"
+              name="membershipStartDate"
+            />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="membershipEndDate" class="fw-bold"
+              >Membership End Date</label
+            >
+            <p-datepicker
+              [(ngModel)]="model.membershipEndDate"
+              name="membershipEndDate"
+              class="w-100"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <p-button
+        label="{{ isEdit ? 'Edit' : ' Add Member' }} "
+        icon="pi pi-check"
+        (click)="saveMember()"
+        type="submit"
+        [disabled]="memberForm.invalid"
+      />
+    </div>
+  </form>
 </p-dialog>

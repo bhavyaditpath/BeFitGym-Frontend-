@@ -5,8 +5,15 @@ import { ForgetpasswordComponent } from './forgetpassword/forgetpassword.compone
 import { NavbarComponent } from './navbar/navbar.component';
 import { MembersComponent } from './members/members.component';
 import { TrainerComponent } from './trainer/trainer.component';
+import { SimpleChange } from '@angular/core';
+import { SimpleComponent } from './simple/simple.component';
+import { ReactiveformComponent } from './reactiveform/reactiveform.component';
+import { TempletedrivenformComponent } from './templetedrivenform/templetedrivenform.component';
 
 export const routes: Routes = [
+  { path: 'reactiveform', component: ReactiveformComponent },
+  { path: 'templetedrivenform', component: TempletedrivenformComponent },
+  { path: 'simple', component: SimpleComponent },
   { path: 'signup', component: SignupPageComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'forgetpassword', component: ForgetpasswordComponent },
@@ -24,5 +31,10 @@ export const routes: Routes = [
       { path: '', redirectTo: 'member', pathMatch: 'full' },
     ],
   },
-  { path: '', redirectTo: '/signup', pathMatch: 'full' },
+  {
+    path: 'simplemodule',
+    loadChildren: () =>
+      import('./simple/simple.module').then((m) => m.SimpleModule),
+  },
+  { path: '', redirectTo: '/reactiveform', pathMatch: 'full' },
 ];

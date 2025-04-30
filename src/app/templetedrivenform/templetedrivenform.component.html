@@ -1,0 +1,51 @@
+<form
+  #myForm="ngForm"
+  (ngSubmit)="onSubmit(myForm)"
+  class="container mt-4"
+>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <app-inputfields
+          label="First Name"
+          type="text"
+          placeholder="Enter your first name"
+          id="firstName"
+          helpText="Enter your first name to log in."
+          [(ngModel)]="userData.firstName"
+          name="firstName"
+          [autofocus]="true"
+          minlength="3"
+          maxlength="10"
+          required
+          class="form-control"
+        ></app-inputfields>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <app-inputfields
+          label="Last Name"
+          type="text"
+          placeholder="Enter your last name"
+          id="lastName"
+          [(ngModel)]="userData.lastName"
+          name="lastName"
+          minlength="3"
+          maxlength="10"
+          class="form-control"
+        ></app-inputfields>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group text-center mt-3">
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
+
+<div class="container mt-4">
+  <h4>Form Data:</h4>
+  <p><strong>First Name:</strong> {{ userData.firstName }}</p>
+  <p><strong>Last Name:</strong> {{ userData.lastName }}</p>
+</div>
